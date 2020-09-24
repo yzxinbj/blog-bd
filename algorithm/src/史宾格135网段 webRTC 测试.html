@@ -1,0 +1,86 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>135段 webRTC</title>
+
+    <script type="text/javascript" src="https://yunapp-static.bj.bcebos.com/sdk/yap-utils.umd.20200707.js"></script>
+    <!-- <script type="text/javascript" src="./yap-utils.umd.js"></script> -->
+    <script src="https://bj.bcebos.com/v1/yunapp-static/webRTC/redfinger.min.20200702.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-y: hidden;
+            background-color: grey;
+            font-family: 微软雅黑, 雅黑;
+        }
+
+        html,
+        body,
+        #play-box {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+</head>
+
+
+<body>
+    <button onclick="play()">play</button>
+    <button onclick="replay()">replay</button>
+    <div id="play-box"></div>
+
+    <script type="text/javascript">
+        const Sign = yapUtils.Sign;
+        const axios = yapUtils.axios;
+        const Tools = yapUtils.Tools;
+        const padCode = 'VM010127135165';
+        let sign = new Sign({
+            ak: 'A0qm1Gz4YstnBkICi6ZaeMh7',
+            sk: '4uz0BUSkao1DZKgrLVlMxnHfpdTQYIjR2tq5637P',
+            host: 'https://yunapp-api.baidu.com/api/v1',
+            path: '/device/cloud/token',
+            params: {
+                padCode: padCode,
+                cuid: '0546bdfe-e16c-e25a-1f77-66905543ef70',
+            }
+        })
+        function play() {
+            axios({
+                method: 'post',
+                url: sign.getUrl(),
+                data: sign.getBody()
+            }).then(res => {
+                console.log(res);
+                Tools.play({
+                    app: {pkgName: ''},
+                    deviceToken: res.data.response.deviceToken
+                }, redfinger, {
+                    isWebRTC: true,
+                    isWss: true,
+                    onError: function(e) {
+                        console.log(e)
+                    }
+                })
+            });
+        }
+        function replay() {
+            redfinger.webrtcRePlay();
+        }
+
+        redfinger.onWebrtcPaused = function () {
+            alert("抱歉，由于浏览器原因，您的试玩被暂停了，请您点击重播后重新进入试玩")
+        }
+    </script>
+</body>
+<html>

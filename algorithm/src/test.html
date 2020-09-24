@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en" style="display: block;">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>试玩体验 -云手机平台_百度云游戏</title>
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,target-densitydpi=device-dpi">
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script>
+        alert("您的浏览器太旧了，请更新版本以获取更好的体验！")
+    </script>
+    <![endif]-->
+    <script type="text/javascript"
+        src="//yunapp-static.cdn.bcebos.com/youbangbang/ybb/thirdParty/jquery.min.js"></script>
+    <link rel="stylesheet" href="//yunapp-static.cdn.bcebos.com/youbangbang/ybb/thirdParty/weui.min.css">
+    <script type="text/javascript" src="//yunapp-static.cdn.bcebos.com/youbangbang/ybb/thirdParty/weui.min.js"></script>
+    <link rel="stylesheet" href="//yunapp-static.cdn.bcebos.com/youxi/css/channelTryPlay.css?v=2">
+    <link rel="stylesheet" href="//yunapp-static.cdn.bcebos.com/youxi/css/a.css">
+    <link rel="stylesheet" href="//yunapp-static.cdn.bcebos.com/youxi/css/b.css">
+    <link rel="stylesheet" href="//yunapp-static.cdn.bcebos.com/youxi/css/c.css">
+    <script type="text/javascript" src="//bj.bcebos.com/v1/yunapp-static/webRTC/redfinger.min.60591.js"></script>
+    <script type="text/javascript" src="//yunapp-static.bj.bcebos.com/sdk/yap-utils.umd.20200617.js?_=1"></script>
+    <!--<script type="text/javascript" src="//baidu-yunapp.cdn.bcebos.com/eruda.min.js"></script>-->
+    <script type="text/javascript" src="//yunapp-static.bj.bcebos.com/youxi/eruda.js"></script>
+    <style type="text/css">
+        .banner-top {
+            display: none;
+        }
+
+        @media (max-width: 750px) {
+            .banner-top {
+                display: block;
+            }
+
+            .banner-top-pc {
+                display: none;
+            }
+        }
+
+        .phone-box {
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+        #webrtcPlayArea,
+        .phone-box .play-box {
+            width: 100%;
+            height: 100%;
+        }
+
+        .quit {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .12);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .replay {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .12);
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            margin-left: -45px;
+        }
+
+        .info {
+            pointer-events: none;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 14px;
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="webrtcPlayArea" style="display: none">
+        <div class="phone-box">
+            <div class="play-box" id="play-box"></div>
+        </div>
+        <div style="display: none;">
+            <button id="btn1" onclick="helper.play()">start</button>
+            <button id="btn2" onclick="redfinger.webrtcRePlay();">恢复</button>
+        </div>
+        <img onclick="helper.quit()" src="//yunapp-static.cdn.bcebos.com/youxi/img/quit.png" class="quit" alt="">
+        <button style="display: none;" onclick="helper.replay()" class="replay">重播</button>
+        <div class="info">
+        </div>
+    </div>
+    <div id="webrtcMsgCenter">
+        <img class="banner-top" width="100%" src="//yunapp-static.cdn.bcebos.com/youxi/img/top.png" alt="">
+        <img class="banner-top-pc" width="100%" src="//yunapp-static.cdn.bcebos.com/youxi/img/top-pc.png" alt="">
+        <img width="100%" src="//yunapp-static.cdn.bcebos.com/youxi/img/banner.png?a=1" onclick="helper.download()"
+            alt="">
+        <div class="trygame-box" style="min-height: 200px;">
+            <div class="container-try">
+                <div class="try-tt">
+                    <h3>试玩中心</h3>
+                </div>
+                <div class="item-box clearfix">
+                </div>
+            </div>
+        </div>
+        <!-- footer -->
+        <div class="footerpage">
+            <footer class="foot">
+                <div class="foot-box">
+                    <ul class="to-self">
+                        <li class="last last-li">
+                            <p class="title">联系我们</p>
+                            <p class="text">dengjieyuan@baidu.com</p>
+                        </li>
+                        <li class="last last-li">
+                            <p class="title">友情链接</p>
+                            <p class="text"><a href="http://yunapp.baidu.com/">百度云手机</a></p>
+                        </li>
+                    </ul>
+                    <p class="text-center copy">Copyright © 2020 Baidu All Rights Reserved</p>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const Sign = yapUtils.Sign;
+        const Tools = yapUtils.Tools;
+        const axios = yapUtils.axios;
+        const pageData = {
+            ak: "BR9smgUXdqavfV53Wckeu46N",
+            sk: "456QFfe2OvoSLi1d3kAzsngyRlmUHGEcTZChKVuw",
+            host: "https://yunapp-api.baidu.com/api/v1",
+            gameOptions: [],
+            apps: [],
+            objReaded: {},
+            cookieName: "has-readed-list"
+        };
+        var helper = {
+            response: "",
+            config: {
+                onWebrtcRunInfo: function (info) {
+                    $('.info').html(`
+                        <p>webRTC: ${redfinger.config.isWebRtc ? '是' : '否'}</p>
+                        <p>当前帧率: ${info[1]}</p>
+                        <p>码率: ${info[6]}</p>
+                        <p>分辨率: ${info[7]}</p>
+                        <p>延迟: ${info[8]}</p>
+                        <p>压码: ${info[info.length - 1] === 3 ? '硬压' : '软压'}</p>
+                    `)
+                },
+                onStartPlay: function (info) {
+                    // 用于验证 200001 问题
+                    // info.resultInfo.controlList[0].controlInfoList = [
+                    // {
+                    // controlIp: '10.0.31.8',
+                    // controlPort: 9965
+                    // }
+                    // ]
+                },
+                onPlayEnd: function (info) {
+                    // console.log('############################')
+                    // console.log(info)
+                    // console.log('############################')
+                    if (!redfinger.config.isWebRtc) {
+                        weui.toast('不支持webRTC', 2000);
+                    } else {
+                        setTimeout(function () {
+                            // redfinger.changeResolution(helper.config.resolution[0], helper.config.resolution[1])
+                        }, 2000)
+                    }
+                },
+                isWebRTC: true,
+                isWss: false,
+                onError: function (e) {
+                    console.log(e);
+                    let content = "";
+                    if (e.err.code && e.err.code === 196614) {
+                        content = "啊欧~ 检测到您空闲时间过长，我们先释放给其他玩家了~ 欢迎您再来玩哦~" + "(" + e.err.code + ")";
+                    } else {
+                        content = (e.tip || "啊欧~ 服务不稳定，我们正在抓紧抢修，请您稍后再试~") + "(" + (e.err.message || e.err.code) + ")";
+                        if (e.err && e.err.stack) {
+                            console.log(e.err.message);
+                            console.log(JSON.stringify(e.err.stack));
+                        }
+                    }
+                    weui.dialog({
+                        title: "提醒",
+                        content: content,
+                        className: "custom-classname",
+                        buttons: [{
+                            label: "确定",
+                            type: "primary",
+                            onClick: function () {
+                                $('#play-box *').remove()
+                                $('#webrtcPlayArea').hide()
+                                $('#webrtcMsgCenter').show()
+                                $('html,body').css({
+                                    height: 'auto'
+                                })
+                                redfinger.destory();
+                            }
+                        }]
+                    });
+                }
+            },
+            isBdApp: function () {
+                var userAgentInfo = navigator.userAgent;
+                var Agents = ["baiduboxapp", "baidu", "ByteLocale", "bytelocale", "Weibo", "weibo"];
+                var flag = false;
+                for (var v = 0; v < Agents.length; v++) {
+                    if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                        flag = true;
+                        break;
+                    }
+                }
+                return flag;
+            },
+            isPc: function () {
+                var userAgentInfo = navigator.userAgent;
+                var Agents = ["Android", "iPhone", "SymbianOS",
+                    "Windows Phone", "iPad", "iPod"];
+                var flag = true;
+                for (var v = 0; v < Agents.length; v++) {
+                    if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                        flag = false;
+                        break;
+                    }
+                }
+                return flag;
+            },
+            isIOS: function () {
+                var e = navigator.userAgent;
+                if (e.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+                    return true;
+                }
+                return false;
+            },
+            isChromeUA: function () {
+                var e = navigator.userAgent.toLowerCase();
+                if (e.indexOf("chrome") > -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            getAndroidVersion: function () {
+                var ua = navigator.userAgent.toLowerCase();
+                var version = null;
+                if (ua.indexOf("android") > 0) {
+                    var reg = /android [\d._]+/gi;
+                    var vInfo = ua.match(reg);
+                    version = (vInfo + "").replace(/[^0-9|_.]/ig, "").replace(/_/ig, "."); //得到版本号4.2.2
+                    version = parseInt(version.split('.')[0]);// 得到版本号第一位
+                }
+
+                return version;
+            },
+            getIosVersion: function () {
+                var ua = navigator.userAgent.toLowerCase();
+                var version = null;
+                if (ua.indexOf("like mac os x") > 0) {
+                    var reg = /os [\d._]+/gi;
+                    var vInfo = ua.match(reg);
+                    version = (vInfo + "").replace(/[^0-9|_.]/ig, "").replace(/_/ig, "."); //得到版本号9.3.2或者9.0
+                    version = parseInt(version.split('.')[0]); // 得到版本号第一位
+                }
+
+                return version;
+            },
+            play: function (pkg) {
+                let isBaiduBox = helper.getUrlVars()['isBaiduBox'];
+                let isLite = helper.getUrlVars()['isLite'];
+                let channel = helper.getUrlVars()['channel'];
+                let gameConfig = helper.getUrlVars()['gameConfig'];
+                let fid = helper.getUrlVars()['fid'];
+                isLite = isLite ? 1 : '';
+                if (isBaiduBox) {
+                    window.location.href = `http://youbangbang.baidu.com/jump.html?gameConfig=${gameConfig}&fid=${fid}&pkg=${pkg}&ak=${pageData.ak}&sk=${pageData.sk}&isLite=${isLite}&channel=${channel}`
+                    return;
+                }
+
+                $('#webrtcPlayArea').show()
+                $('#webrtcMsgCenter').hide()
+                $('html,body,video').css({
+                    height: '100%'
+                })
+                let loading = weui.loading("", {
+                    className: "custom-classname"
+                });
+                let padCode = helper.getUrlVars()['padCode'];
+                if (padCode) {
+                    Tools.getDeviceByPadCode(padCode, pageData.ak, pageData.sk, pkg, {
+                        type: 0,
+                        onApplyDeviceSuccess: function (response) {
+                            loading.hide();
+                            helper.response = response;
+                            console.log(helper.config);
+                            Tools.play(helper.response, window.redfinger, helper.config);
+                        },
+                        onError: function (e) {
+                            loading.hide();
+                            helper.config.onError(e);
+                        }
+                    });
+                } else {
+                    Tools.getDevice(pageData.ak, pageData.sk, pkg, {
+                        type: 0,
+                        onApplyDeviceSuccess: function (response) {
+                            loading.hide();
+                            helper.response = response;
+                            console.log(helper.config);
+                            Tools.play(helper.response, window.redfinger, helper.config);
+                        },
+                        onError: function (e) {
+                            loading.hide();
+                            helper.config.onError(e);
+                        }
+                    });
+                }
+            },
+            click: function () {
+                var event = new MouseEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true
+                });
+                document.getElementById('btn1').dispatchEvent(event);
+            },
+            bindDomEvents: function () {
+                document.addEventListener("visibilitychange", () => {
+                    if (document.visibilityState === "hidden") {
+                        window.redfinger.sendControlAVTrans(false);
+                    }
+                    if (document.visibilityState === "visible") {
+                        window.redfinger.sendControlAVTrans(true);
+                    }
+                });
+                redfinger.onWebrtcPaused = function () {
+                    if (helper.getUrlVars()['tip']) {
+                        weui.dialog({
+                            title: "提醒",
+                            content: "抱歉，由于浏览器原因，您的试玩被暂停了，请您点击重播后重新进入试玩",
+                            className: "custom-classname",
+                            buttons: [{
+                                label: "确定",
+                                type: "primary",
+                                onClick: function () {
+                                    $('.replay').show()
+                                }
+                            }]
+                        });
+                    }
+                }
+            },
+            getUrlVars: function () {
+                var vars = [],
+                    hash;
+                var hashes = window.location.href.slice(window.location.href.indexOf("?") + 1).split("&");
+
+                for (var i = 0; i < hashes.length; i++) {
+                    hash = hashes[i].split("=");
+                    vars.push(hash[0]);
+                    vars[hash[0]] = hash[1];
+                }
+
+                return vars;
+            },
+            replay: function () {
+                redfinger.webrtcRePlay();
+                $('.replay').hide();
+            },
+            quit: function () {
+                weui.dialog({
+                    title: "提醒",
+                    content: "您确定要退出游戏吗？",
+                    className: "custom-classname",
+                    buttons: [{
+                        label: "取消",
+                        type: "default",
+                        onClick: function () {
+                        }
+                    }, {
+                        label: "退出",
+                        type: "primary",
+                        onClick: function () {
+                            $('#play-box *').remove()
+                            $('#webrtcPlayArea').hide()
+                            $('#webrtcMsgCenter').show()
+                            $('html,body').css({
+                                height: 'auto'
+                            })
+                            redfinger.destory();
+                        }
+                    }]
+                });
+            },
+            download() {
+                // var href = "https://downpack.baidu.com/cloudphone_AndroidPhone_guanwang.apk";
+                var href = "https://youbangbang.baidu.com";
+                window.open(href, "_blank");
+            },
+            getTemplate(data) {
+                if (!data.app_tags || !(data.app_tags[0] instanceof String)) {
+                    data.app_tags = ['']
+                }
+                return `
+                <div class="item">
+                    <a onclick="helper.play('${data.pkgName}')" href="javascript:;">
+                        <div class="img"><img src="${data.logo}" alt=""></div>
+                        <div class="i-r">
+                            <div class="star">${data.score}分</div>
+                            <div class="tt">${data.name}</div>
+                            <div class="des">&nbsp;</div>
+                            <div class="btn-box">
+                                <span class="tag">${data.app_tags[0].split(/\s+/).slice(0, 2).join(" ")}</span>
+                                <span class="go">即玩</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>`;
+            },
+            renderTemplate(pkg) {
+                let len = pageData.gameOptions.length
+                len = len > 12 ? 12 : len
+                for (let i = 0; i < len; i++) {
+                    if (pkg) {
+                        if (pkg === pageData.gameOptions[i].pkgName) {
+                            $(".item-box").append(helper.getTemplate(pageData.gameOptions[i]));
+                        }
+                    } else {
+                        $(".item-box").append(helper.getTemplate(pageData.gameOptions[i]));
+                    }
+                }
+            },
+            init() {
+                var isDebug = helper.getUrlVars()["isDebug"];
+                let fps = helper.getUrlVars()["fps"];
+                let bitrate = helper.getUrlVars()["bitrate"];
+                let ak = helper.getUrlVars()["ak"];
+                let sk = helper.getUrlVars()["sk"];
+                let width = helper.getUrlVars()["width"];
+                let height = helper.getUrlVars()["height"];
+                let decodeConfig = helper.getUrlVars()["decodeConfig"];
+                let pkg = helper.getUrlVars()["pkg"];
+                let isWss = helper.getUrlVars()["isWss"];
+                pageData.ak = ak ? ak : pageData.ak
+                pageData.sk = sk ? sk : pageData.sk
+                helper.config.fps = fps ? fps : helper.config.fps
+                helper.config.bitrate = bitrate ? bitrate : helper.config.bitrate
+                helper.config.decodeConfig = decodeConfig ? Number(decodeConfig) : helper.config.decodeConfig
+                if (width && height) {
+                    helper.config.resolution = [Number(width), Number(height)]
+                }
+                if (isDebug) {
+                    window.eruda.init();
+                }
+                if (isWss) {
+                    helper.config.isWss = true;
+                }
+                // window.eruda.init();
+                helper.config.isWebRTC = true;
+                helper.bindDomEvents();
+                let loading = weui.loading("", {
+                    className: "custom-classname"
+                });
+                let sign = new Sign({
+                    ak: pageData.ak,
+                    sk: pageData.sk,
+                    host: pageData.host,
+                    path: '/apps',
+                    params: {
+                        start: 0,
+                        limit: 20,
+                        cuid: Tools.guid(),
+                        channel: false // string 渠道名，数据统计用
+                    }
+                });
+                axios.get(sign.getUrl()).then(resp => {
+                    pageData.apps = resp.data.response.apps;
+                    pageData.gameOptions = pageData.apps.filter(function (i) {
+                        return i.status === 0;
+                    });
+                    pageData.gameOptions.map(function (game) {
+                        game.value = game.id;
+                        game.label = game.name;
+                    });
+                    pageData.gameOptions.sort(function (a, b) {
+                        return b.weight - a.weight;
+                    });
+                    helper.renderTemplate(pkg);
+                    loading.hide();
+                }).catch(e => {
+                    console.log(e);
+                });
+            }
+        };
+        helper.init();
+    </script>
+</body>
+
+</html>

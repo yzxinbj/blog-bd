@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>联通-虚拟手柄</title>
+    <!-- <script type="text/javascript" src="https://bj.bcebos.com/v1/yunapp-static/webRTC/redfinger.min.60591.js"></script> -->
+    <script type="text/javascript"
+        src="https://bj.bcebos.com/v1/yunapp-static/webRTC/redfinger.min.1.8.10.1.js"></script>
+    <script type="text/javascript" src="https://bj.bcebos.com/v1/yunapp-static/sdk/yap-utils.umd.20200831.js"></script>
+    <style type="text/css">
+        html,
+        body,
+        #play-box {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="play()">play</button>
+    <button onclick="replay()">replay</button>
+    <div id="play-box"></div>
+    <script type="text/javascript">
+        const Tools = yapUtils.tools;
+        const AK = 'tXABu2aZTwe3GoMFhf9qmO4p';
+        const SK = 'AWVuUM0rOGbCI9ltfseEn348ZDYSPpTNQdLj7aR2';
+        const PKG = 'com.carrot.iceworld';
+        // const HOST = 'http://202.99.114.153:8021/api/v1';
+        const HOST = 'https://liantong-test.cloud-control.top:8019/api/v1';
+        const PLAY_BOX = "play-box";
+        token = ''
+        let config = {
+            isWebRTC: true,
+            isWss: true
+        };
+
+        function play() {
+            Tools.getDevice(
+                AK,
+                SK,
+                PKG,
+                {
+                    type: 0,
+                    host: HOST,
+                    onApplyDeviceSuccess(response) {
+                        // redfinger.videoinfo.canRotate = true;
+                        token = response.deviceToken
+                        // showPlayBox(true);
+                        Tools.play(response, redfinger, config);
+                    },
+                    onError(e) {
+                        console.log(e);
+                        alert(e)
+                    }
+                }
+            )
+        }
+
+        function playWithToken() {
+            showPlayBox(true);
+            Tools.play({
+                app: {
+                    pkgName: PKG,
+                },
+                deviceToken: token
+            }, redfinger, {
+                isWebRTC: false,
+                isWss: false,
+                adapt: {
+                    sound: true,
+                    bitrate: 3200,
+                    fps: 20
+                }
+            })
+        }
+
+        function back() {
+            Tools.disConnect(
+                AK,
+                SK,
+                {
+                    host: HOST
+                }).then(res => console.log(res)).catch(err => console.log(err));
+            showPlayBox(false);
+        }
+
+        function showPlayBox(display) {
+            var playBox = document.getElementById(PLAY_BOX);
+            if (playBox) {
+                if (display) {
+                    playBox.style.display = 'block';
+                } else {
+                    playBox.style.display = 'none';
+                }
+            }
+        }
+
+        function replay() {
+            redfinger.webrtcRePlay();
+        }
+
+        redfinger.onWebrtcPaused = function () {
+            alert("抱歉，由于浏览器原因，您的试玩被暂停了，请您点击重播后重新进入试玩")
+        }
+    </script>
+</body>
+
+</html>
