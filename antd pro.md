@@ -26,3 +26,17 @@ export default {
   }),
 };
 ```
+
+
+# antd disign react components
+## Grid 栅格
+```
+<Row gutter={[16, 24]}  justify="space-around" align="middle">
+  <Col span={24} offset={4} pull={4} order={2} flex={3}>3 / 5</Col>
+  <Col span={12} offset={4} pull={4} order={1} flex={2}>2 / 5</Col>
+</Row>
+<Row gutter={[16, 24]}  justify="space-around" align="middle">
+  <Col span={24} offset={4} pull={4} order={2} flex="1 1 200px">3 / 5</Col>
+  <Col span={12} offset={4} pull={4} order={1} flex="0 1 500px">2 / 5</Col>
+</Row>
+```
