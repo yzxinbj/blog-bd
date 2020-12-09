@@ -33,5 +33,14 @@ var lines = S(text).lines();
 # 7. eslint unexpected empty function
 解决办法： 添加注释
 
+# 8. 报错 node_modules/@types/node/assert.d.ts(1) '{' or ';' expected. #333
+```
+// If you had got the problem, do not worry, you can just update typedoc and ts version. #332
+// 这是github 上的解答，确实解决了问题，找了好久 one day
+// 只需要改package.json 下的下面两行即可
+    "typedoc": "^0.14.2",
+    "typescript": "^4.0.5"
+```
+
 
 

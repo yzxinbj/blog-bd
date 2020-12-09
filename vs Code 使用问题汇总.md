@@ -86,3 +86,25 @@ javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces
 ## 17 format all files
 安装此扩展程序，文件夹处右键format即可
 Format in context menus
+## 18 npm script run 如何钓出来
+资源管理器右上角得设置先勾选出来之后，拖动到左侧sidebar即可
+
+## 19 npm 设置镜像
+https://registry.npm.taobao.org
+- npm config set registry http://registry.npm.baidu-int.com/
+- 或者直接 vim ~/.npmrc 内写入 registry=http://registry.npm.baidu-int.com/ 如何没有npmrc 直接touch .npmrc即可
+
+## 20 nvm 设置镜像
+```
+vim ~/.zshrc
+export NVM_NODEJS_ORG_MIRROR=http://npm.taobao.org/mirrors/node
+source ~/.zshrc
+```
+## 21 百度提供的电脑改密码要在状态栏的小钥匙的地方改
+git push origin HEAD:refs/for/master
+
+## 22 git 默认中文文件名是 \xxx\xxx 等八进制形式, 如何改成显示中文
+git config --global core.quotepath false
+git config --global gui.encoding utf-8
+git config --global i18n.commit.encoding utf-8
+git config --global i18n.logoutputencoding utf-8
