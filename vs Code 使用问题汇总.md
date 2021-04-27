@@ -108,3 +108,9 @@ git config --global core.quotepath false
 git config --global gui.encoding utf-8
 git config --global i18n.commit.encoding utf-8
 git config --global i18n.logoutputencoding utf-8
+
+## 23 解决vscode 内terminal node 版本不正确的问题，
+背景：已经用nvm 设置了默认版本 // nvm alias default v10
+解决办法： 在setting.json 里面增加
+"terminal.integrated.shellArgs.osx": []
+// Apparently the default shellArgs for osx are set to bash while I’m using zsh. I solved the problem by setting the shellArgs in my user settings to an empty array:
