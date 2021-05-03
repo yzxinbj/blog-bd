@@ -46,7 +46,7 @@ mac: command + k + 0，折叠所有代码块。command + k + j，展开所有代
 0是代码折叠级别，同理可以换用1，2，3等
 
 ## 7. 如何让js 文件中的 html 变高亮
-Highlight Matching Tag 插件
+Highlight Matching Tag 插件, 只会让html 能自动找到匹配的标签，并高亮，高亮的是匹配的
 
 ## 8. VSCode 如何打开终端
 mac: ctrl + `
@@ -68,10 +68,27 @@ mac: ctrl + `
 安装 CSS Navigation
 
 ## 12 如何高亮 js/ts 中使用的 html
-安装 lit-html
+安装 lit-html之后 可以让下面这种模板字符串高亮, 注意需要用下面这种标签模板
+```javascript
+let a = html`
+<div></div>
+`
+
+function html(xml, ...rest) {
+  let res = "";
+  xml.forEach((item, index) => {
+    res += item + (rest[index] || "");
+  });
+  return res;
+}
+```
 
 ## 13 VSCode tab 自动补全html tag
 setting 搜索 emmet.triggerExpansionOnTab
+- 另外如果想让在js 里面写html的时候也能使用tab补全，需要设置
+"emmet.includeLanguages": {
+    "javascript": "html"
+}
 
 ## 14 VSCode 装了vim插件 cmd+c 复制不管用，但是右键复制ok
 首选项 -> 键盘快捷方式 -> 搜 extension.vim_cmd+c 改成其他键位映射
@@ -114,3 +131,7 @@ git config --global i18n.logoutputencoding utf-8
 解决办法： 在setting.json 里面增加
 "terminal.integrated.shellArgs.osx": []
 // Apparently the default shellArgs for osx are set to bash while I’m using zsh. I solved the problem by setting the shellArgs in my user settings to an empty array:
+
+
+## code runner 插件可以直接执行 js
+
