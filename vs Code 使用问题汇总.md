@@ -72,7 +72,7 @@ mac: ctrl + `
 ```javascript
 let a = html`
 <div></div>
-`
+`;
 
 function html(xml, ...rest) {
   let res = "";
@@ -133,5 +133,14 @@ git config --global i18n.logoutputencoding utf-8
 // Apparently the default shellArgs for osx are set to bash while I’m using zsh. I solved the problem by setting the shellArgs in my user settings to an empty array:
 
 
-## code runner 插件可以直接执行 js
+## 24 code runner 插件可以直接执行 js
 
+## 25 当vscode 安装了一些支持html 模板高亮的插件，如njk插件，则html文件会被识别为其他文件，需要手动改变类型，此时就可以使用快捷键了
+First set HTML to the language
+Then type:
+
+html:5
+
+And hit Tab
+
+Voila, HTML Template in your favorite code editor!
